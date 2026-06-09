@@ -96,4 +96,4 @@ python3 src/main.py
 
 - **플랫폼**: Raspberry Pi 5
 - **언어**: Python 3
-- **분류**: IoT / 캡스톤 디자인 프로젝트
+- **분류**: 임베디드 시스템 수업 기말 프로젝트 (IoT)
