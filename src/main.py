@@ -121,12 +121,11 @@ def buzzer_sunny():
     buzzer_silent()
 
 def buzzer_rainy():
-    # 수동형: 높낮이 경고음 반복
-    while buzzer_running:
-        play_tone(NOTE['C5'], 0.25)
+    # 수동형: 높낮이 경고음 (1회, 반복 안 함)
+    for note in ('C5', 'G4', 'C5', 'G4'):
         if not buzzer_running:
             break
-        play_tone(NOTE['G4'], 0.25)
+        play_tone(NOTE[note], 0.15)
     buzzer_silent()
 
 def start_buzzer(mode):
