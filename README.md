@@ -5,6 +5,10 @@ Raspberry Pi 5 기반의 **스마트 빨래 날씨 감지 시스템**입니다.
 
 > 🎥 **데모 영상**: [v1.0 릴리스에서 보기/다운로드](https://github.com/juyeon777/smart-laundry-system/releases/tag/v1.0)
 
+![완성 모형](assets/images/model.jpg)
+
+> 짱구 플라스틱 통(집 몸체) · 마분지 지붕(가동부) · 빗물 센서 · 부저 · 서보 해 모형 · 브레드보드(LED·버튼) 구성
+
 ---
 
 ## 📖 프로젝트 소개
