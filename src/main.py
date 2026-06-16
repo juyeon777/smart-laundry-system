@@ -9,7 +9,7 @@ Raspberry Pi 5에서 빗물 센서로 비를 감지하고,
 
 핀 배정 (BCM):
   RAIN_SENSOR_PIN = 17  빗물 감지 센서 DO (LOW=비 감지)
-  BUZZER_PIN      = 27  부저 (능동형, ON/OFF)
+  BUZZER_PIN      = 27  부저 (수동형, PWM 멜로디)
   LED_RED_PIN     = 22  맑음 표시 (빨간 LED)
   LED_BLUE_PIN    = 23  비 표시 (파란 LED)
   BTN_OPEN_PIN    = 24  수동 맑음 버튼 (내부 풀업)
@@ -45,7 +45,7 @@ h = lgpio.gpiochip_open(0)
 lgpio.gpio_claim_input(h, RAIN_SENSOR_PIN)
 lgpio.gpio_claim_input(h, BTN_OPEN_PIN, lgpio.SET_PULL_UP)
 lgpio.gpio_claim_input(h, BTN_CLOSE_PIN, lgpio.SET_PULL_UP)
-lgpio.gpio_claim_output(h, BUZZER_PIN, 1)
+lgpio.gpio_claim_output(h, BUZZER_PIN, 0)  # 수동형: 시작 시 무음(고정 레벨)
 lgpio.gpio_claim_output(h, LED_RED_PIN, 0)
 lgpio.gpio_claim_output(h, LED_BLUE_PIN, 0)
 
@@ -95,28 +95,40 @@ def set_rainy():
     time.sleep(0.5)
     servo_roof.min()
 
+# 음계 주파수 (Hz)
+NOTE = {'C4': 262, 'D4': 294, 'E4': 330, 'F4': 349,
+        'G4': 392, 'A4': 440, 'B4': 494, 'C5': 523}
+
+def buzzer_silent():
+    # 수동형: PWM 정지 후 고정 레벨로 두면 소리 안 남
+    lgpio.tx_pwm(h, BUZZER_PIN, 0, 0)
+    lgpio.gpio_write(h, BUZZER_PIN, 0)
+
+def play_tone(freq, dur):
+    lgpio.tx_pwm(h, BUZZER_PIN, freq, 50)  # 주파수 freq, 듀티 50%
+    time.sleep(dur)
+
 def stop_buzzer():
     global buzzer_running
     buzzer_running = False
-    lgpio.gpio_write(h, BUZZER_PIN, 1)
+    buzzer_silent()
 
 def buzzer_sunny():
-    # 능동형: 짧게 3번 삐
-    for _ in range(3):
+    # 수동형: 도-미-솔-도 상행 멜로디 (1회)
+    for note in ('C4', 'E4', 'G4', 'C5'):
         if not buzzer_running:
             break
-        lgpio.gpio_write(h, BUZZER_PIN, 0)
-        time.sleep(0.15)
-        lgpio.gpio_write(h, BUZZER_PIN, 1)
-        time.sleep(0.15)
+        play_tone(NOTE[note], 0.15)
+    buzzer_silent()
 
 def buzzer_rainy():
-    # 능동형: 길게 반복
+    # 수동형: 높낮이 경고음 반복
     while buzzer_running:
-        lgpio.gpio_write(h, BUZZER_PIN, 0)
-        time.sleep(0.5)
-        lgpio.gpio_write(h, BUZZER_PIN, 1)
-        time.sleep(0.5)
+        play_tone(NOTE['C5'], 0.25)
+        if not buzzer_running:
+            break
+        play_tone(NOTE['G4'], 0.25)
+    buzzer_silent()
 
 def start_buzzer(mode):
     global buzzer_thread, buzzer_running
