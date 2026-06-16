@@ -285,12 +285,28 @@ def main():
     print(f"  [WEB ] http://<Pi-IP>:{WEB_PORT}  (같은 와이파이)")
     print("="*45 + "\n")
     activate_sunny(trigger="SYSTEM START")
+
+    # 빗물센서 디바운스: 같은 값이 RAIN_STABLE_N회 연속일 때만 인정 (떨림/노이즈 방지)
+    RAIN_STABLE_N  = 5          # 0.1s * 5 = 0.5초 동안 같은 값이어야 모드 전환
+    rain_candidate = False
+    rain_count     = 0
+    stable_rain    = False
     try:
         while True:
-            rain      = lgpio.gpio_read(h, RAIN_SENSOR_PIN) == 0
+            rain_raw  = lgpio.gpio_read(h, RAIN_SENSOR_PIN) == 0
             btn_open  = lgpio.gpio_read(h, BTN_OPEN_PIN)   == 0
             btn_close = lgpio.gpio_read(h, BTN_CLOSE_PIN)  == 0
-            last_rain = rain
+
+            # 디바운스: 0.5초 연속 같은 값일 때만 stable_rain 갱신
+            if rain_raw == rain_candidate:
+                rain_count += 1
+            else:
+                rain_candidate = rain_raw
+                rain_count = 1
+            if rain_count >= RAIN_STABLE_N:
+                stable_rain = rain_candidate
+            rain = stable_rain
+            last_rain = stable_rain
 
             if btn_open:
                 manual_mode = True
