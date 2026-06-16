@@ -3,6 +3,8 @@
 Raspberry Pi 5 기반의 **스마트 빨래 날씨 감지 시스템**입니다.
 날씨(맑음/비)를 감지하여 자동으로 빨래를 보호하는 임베디드 시스템 프로젝트입니다.
 
+> 🎥 **데모 영상**: [v1.0 릴리스에서 보기/다운로드](https://github.com/juyeon777/smart-laundry-system/releases/tag/v1.0)
+
 ---
 
 ## 📖 프로젝트 소개
