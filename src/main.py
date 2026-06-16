@@ -96,7 +96,8 @@ def set_rainy():
     servo_roof.min()
 
 # 음계 주파수 (Hz)
-NOTE = {'C4': 262, 'D4': 294, 'E4': 330, 'F4': 349,
+NOTE = {'G3': 196, 'A3': 220, 'B3': 247,
+        'C4': 262, 'D4': 294, 'E4': 330, 'F4': 349,
         'G4': 392, 'A4': 440, 'B4': 494, 'C5': 523}
 
 def buzzer_silent():
@@ -121,11 +122,12 @@ def buzzer_sunny():
     buzzer_silent()
 
 def buzzer_rainy():
-    # 수동형: 높낮이 경고음 (1회, 반복 안 함)
-    for note in ('C5', 'G4', 'C5', 'G4'):
+    # 수동형: 낮게 하행하는 불길한 경고음, 마지막 음 길게 (1회)
+    seq = (('G4', 0.18), ('E4', 0.18), ('C4', 0.18), ('A3', 0.45))
+    for note, dur in seq:
         if not buzzer_running:
             break
-        play_tone(NOTE[note], 0.15)
+        play_tone(NOTE[note], dur)
     buzzer_silent()
 
 def start_buzzer(mode):
