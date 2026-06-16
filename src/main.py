@@ -100,9 +100,8 @@ NOTE = {'C4': 262, 'D4': 294, 'E4': 330, 'F4': 349,
         'G4': 392, 'A4': 440, 'B4': 494, 'C5': 523}
 
 def buzzer_silent():
-    # 수동형: PWM 정지 후 고정 레벨로 두면 소리 안 남
-    lgpio.tx_pwm(h, BUZZER_PIN, 0, 0)
-    lgpio.gpio_write(h, BUZZER_PIN, 0)
+    # 수동형: 듀티 0%면 펄스가 없어 무음 (주파수 0은 'bad PWM micros' 에러)
+    lgpio.tx_pwm(h, BUZZER_PIN, 1000, 0)
 
 def play_tone(freq, dur):
     lgpio.tx_pwm(h, BUZZER_PIN, freq, 50)  # 주파수 freq, 듀티 50%
